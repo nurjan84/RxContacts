@@ -28,6 +28,27 @@ dependencies {
 ```
 
 
+Example:
+```
+private fun getRxContacts(){
+        disposables.add(
+            RxContacts(this)
+                .sortByDisplayName()
+                .getAllContacts()  // .getContacts(limit, offset)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {result -> run {
+                        println("getRxContacts ok $result")
+                    }},
+                    { e -> run{
+                        println("getRxContacts error $e")
+                    }}
+                )
+        )
+    }
+```
+
 
 Available data :
 ```
