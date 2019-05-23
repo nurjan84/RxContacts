@@ -3,7 +3,7 @@ Rx Contacts Library
 
 [![](https://jitpack.io/v/nurjan84/RxContacts.svg)](https://jitpack.io/#nurjan84/RxContacts)
 
-Reading almost all fields of the contacts.
+Reading almost all fields of the contacts. You can set limit and offset to make pagination. 
 
 don't forget ask for permission
 
