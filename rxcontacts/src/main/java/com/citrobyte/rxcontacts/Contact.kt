@@ -1,8 +1,5 @@
 package com.citrobyte.rxcontacts
 
-import androidx.annotation.Keep
-
-@Keep
 data class Contact (
     val contactId: Long
 ){
@@ -55,35 +52,30 @@ data class Contact (
     }
 }
 
-@Keep
 data class Phone(
     val phoneNumber:String?,
     val phoneType:Int?,
     val customTypeName:String? = null
 )
 
-@Keep
 data class Email(
     val emailAddress:String?,
     val emailType:Int?,
     val customTypeName:String? = null
 )
 
-@Keep
 data class EventDate(
     val date:String?,
     val dateType:Int?,
     val customTypeName:String? = null
 )
 
-@Keep
 data class IM(
     val im:String?,
     val imProtocol:Int?,
     val customProtocolName:String? = null
 )
 
-@Keep
 data class Company(
     val company:String? = null,
     val companyTitle:String? = null

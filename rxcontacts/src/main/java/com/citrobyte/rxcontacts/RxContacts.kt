@@ -4,12 +4,11 @@ import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
 import android.provider.ContactsContract
-import androidx.annotation.Keep
+
 import io.reactivex.Observable
 
 class RxContacts (private val context : Context){
 
-    @Keep
     companion object{
         const val LIMIT = "LIMIT"
         const val OFFSET = "OFFSET"

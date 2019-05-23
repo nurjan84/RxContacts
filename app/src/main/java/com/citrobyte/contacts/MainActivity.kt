@@ -43,7 +43,8 @@ class MainActivity : AppCompatActivity(){
     private fun getRxContacts(){
         disposables.add(
             RxContacts(this)
-                .getContacts(5,0)
+                .sortByDisplayName()
+                .getAllContacts()  // .getContacts(limit, offset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
