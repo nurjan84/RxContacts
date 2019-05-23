@@ -5,7 +5,7 @@ Rx Contacts Library
 
 Reading almost all fields of the contacts. You can set limit and offset to make pagination. 
 
-don't forget ask for permission
+don't forget to ask for permission
 
 ```
 <uses-permission android:name="android.permission.READ_CONTACTS"/>
@@ -25,4 +25,29 @@ allprojects {
 dependencies {
 	implementation 'com.github.nurjan84:RxContacts:0.1.0'
 }
+```
+
+Available data :
+```
+var displayName:String? 
+var firstName:String? 
+var lastName:String? 
+var middleName:String?
+var namePrefix:String? 
+var nameSuffix:String? 
+var phoneticMiddleName:String? 
+var phoneticFirstName:String? 
+var phoneticLastName:String?
+var nickName:String? 
+var eventDates: ArrayList<EventDate>? 
+var phones:ArrayList<Phone>? 
+var emails:ArrayList<Email>? 
+var messengers:ArrayList<IM>? 
+var company: Company?
+var sip:String?
+var note:String?
+var isStarred:Boolean?
+var photoUri:String?
+var thumbnailUri:String?
+var websites:ArrayList<String>?
 ```
