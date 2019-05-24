@@ -28,17 +28,17 @@ class RxContacts (private val context : Context){
         return this
     }
 
-    fun getAllContacts(): Observable<ArrayList<Contact>> {
-        val contactCursor = createContactsCursor(null, null) ?: return Observable.empty()
-        return readContacts(contactCursor)
+    fun getAllContacts(like: String?): Observable<ArrayList<Contact>> {
+        val contactCursor = createContactsCursor(null, null, like) ?: return Observable.empty()
+        return readContacts(contactCursor, like)
     }
 
-    fun getContacts(limit:Int, offset:Int): Observable<ArrayList<Contact>> {
-        val contactCursor = createContactsCursor(limit, offset) ?: return Observable.empty()
-        return readContacts(contactCursor)
+    fun getContacts(limit:Int, offset:Int, like: String?): Observable<ArrayList<Contact>> {
+        val contactCursor = createContactsCursor(limit, offset, like) ?: return Observable.empty()
+        return readContacts(contactCursor, like)
     }
 
-    private fun readContacts(contactCursor:Cursor): Observable<ArrayList<Contact>>{
+    private fun readContacts(contactCursor:Cursor, like: String?): Observable<ArrayList<Contact>>{
 
         val listOfContacts = ArrayList<Contact>()
 
@@ -47,12 +47,20 @@ class RxContacts (private val context : Context){
         val idxPhotoUri = contactCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI)
         val idxThumbnailUri = contactCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI)
 
+
+        var searchingByPhoneNumber = false
+
         while (contactCursor.moveToNext()){
 
             val contact = Contact(contactCursor.getLong(idxId))
             contact.displayName = contactCursor.getString(idxDisplayName)
             contact.photoUri = contactCursor.getString(idxPhotoUri)
             contact.thumbnailUri = contactCursor.getString(idxThumbnailUri)
+
+            var isContainsSearchValue = false
+            if(like != null && isNumber(like)){
+                searchingByPhoneNumber = true
+            }
 
             val dataCursor = createContactsDataCursor(contact.contactId)
             if(dataCursor != null){
@@ -106,8 +114,14 @@ class RxContacts (private val context : Context){
                         }
                         ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE ->{
                             if(contact.phones == null){contact.phones = ArrayList()}
+                            val phoneValue = dataCursor.getString(idxPhoneNumber)
+                            if(searchingByPhoneNumber){
+                                if(phoneValue?.contains(like!!, true) == true){
+                                    isContainsSearchValue = true
+                                }
+                            }
                             val phone = Phone(
-                                dataCursor.getString(idxPhoneNumber),
+                                phoneValue,
                                 dataCursor.getInt(idxPhoneNumberType),
                                 dataCursor.getString(idxPhoneNumberCustomType)
                             )
@@ -157,8 +171,13 @@ class RxContacts (private val context : Context){
                     }
                 }
             }
-
-            listOfContacts.add(contact)
+            if(searchingByPhoneNumber){
+                if(isContainsSearchValue){
+                    listOfContacts.add(contact)
+                }
+            }else{
+                listOfContacts.add(contact)
+            }
         }
 
         contactCursor.close()
@@ -166,22 +185,32 @@ class RxContacts (private val context : Context){
         return Observable.fromArray(listOfContacts)
     }
 
-    private fun createContactsCursor(limit:Int?, offset:Int?): Cursor? {
+    private fun createContactsCursor(limit:Int?, offset:Int?, like:String?): Cursor? {
         val projection = arrayOf(
         ContactsContract.Contacts._ID,
         ContactsContract.Contacts.DISPLAY_NAME,
         ContactsContract.Contacts.PHOTO_URI,
         ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
         )
+
+        var selection :String? = null
+        var selectionArg : Array<String>? = null
+        if(like != null && !isNumber(like)){
+            selection =  ContactsContract.Contacts.DISPLAY_NAME +" LIKE ?"
+            selectionArg = arrayOf("%$like%")
+        }
+
+
         var limitAndOffset = ""
         if(limit != null && offset != null){
             limitAndOffset =  " $LIMIT $limit $OFFSET $offset"
         }
+
         return contentResolver.query(
             ContactsContract.Contacts.CONTENT_URI,
             projection,
-            null,
-            null,
+            selection,
+            selectionArg,
             contactsSortingOrder + limitAndOffset
         )
     }
@@ -202,13 +231,19 @@ class RxContacts (private val context : Context){
             ContactsContract.Data.MIMETYPE,
             ContactsContract.Data.IN_VISIBLE_GROUP
         )
+
+        val selection :String? = ContactsContract.Data.CONTACT_ID +" = ?"
+        val selectionArg : Array<String>? = arrayOf(contactId.toString())
+
         return contentResolver.query(
             ContactsContract.Data.CONTENT_URI,
             projection,
-            ContactsContract.Data.CONTACT_ID +" = ?",
-            arrayOf(contactId.toString()),
+            selection,
+            selectionArg,
             null
         )
     }
+
+    private fun isNumber(c:CharSequence) = run { c.matches("-?\\d+(\\.\\d+)?".toRegex()) }
 
 }
