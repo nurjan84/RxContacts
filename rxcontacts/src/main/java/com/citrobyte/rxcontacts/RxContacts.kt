@@ -207,11 +207,19 @@ class RxContacts (private val contentResolver : ContentResolver){
         val projection = arrayOf(
             ContactsContract.Data.CONTACT_ID,
             ContactsContract.Data.DATA4,
+            ContactsContract.Data.DATA1,
             ContactsContract.Data.MIMETYPE
         )
 
-        val selection :String? = ContactsContract.Data.CONTACT_ID +" = ?" + " AND " + ContactsContract.Data.MIMETYPE +" = ?"+ " AND " + ContactsContract.Data.DATA4 + " LIKE ?"
-        val selectionArg : Array<String>? = arrayOf(contactId.toString(), ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE, "%$like%")
+        val selection :String? = ContactsContract.Data.CONTACT_ID +" = ?" +
+                " AND " + ContactsContract.Data.MIMETYPE +" = ?"+
+                " AND (" + ContactsContract.Data.DATA4 + " LIKE ?" +
+                " OR " + ContactsContract.Data.DATA1 + " LIKE ? )"
+        val selectionArg : Array<String>? = arrayOf(
+            contactId.toString(),
+            ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
+            "%$like%",
+            "%$like%")
 
         return contentResolver.query(
             ContactsContract.Data.CONTENT_URI,
