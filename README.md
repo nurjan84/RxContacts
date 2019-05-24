@@ -23,7 +23,7 @@ allprojects {
 
 ```
 dependencies {
-	 implementation 'com.github.nurjan84:RxContacts:0.1.1'
+	 implementation 'com.github.nurjan84:RxContacts:0.1.2'
 }
 ```
 
