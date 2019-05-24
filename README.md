@@ -23,16 +23,16 @@ allprojects {
 
 ```
 dependencies {
-	 implementation 'com.github.nurjan84:RxContacts:0.1.2'
+	implementation 'com.github.nurjan84:RxContacts:0.1.3'
 }
 ```
 
 
 Example:
 ```
-private fun getRxContacts(){
+  private fun getRxContacts(){
         disposables.add(
-            RxContacts(this)
+            RxContacts(contentResolver)
                 .sortByDisplayName()
                 //.getContacts(limit, offset, "search by phone number or display name")
                 .getAllContacts("search by phone number or display name")  //set null to skip searching
