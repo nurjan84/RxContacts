@@ -71,6 +71,7 @@ class RxContacts (private val contentResolver : ContentResolver){
                 val idxNickName = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
                 val idxNote = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
                 val idxPhoneNumber = dataCursor.getColumnIndex(ContactsContract.Data.DATA4)
+                val idxPhoneNumber2 = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
                 val idxPhoneNumberType = dataCursor.getColumnIndex(ContactsContract.Data.DATA2)
                 val idxPhoneNumberCustomType = dataCursor.getColumnIndex(ContactsContract.Data.DATA3)
                 val idxEmail = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
@@ -109,8 +110,11 @@ class RxContacts (private val contentResolver : ContentResolver){
                         }
                         ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE ->{
                             if(contact.phones == null){contact.phones = ArrayList()}
+                            var phoneNumber = dataCursor.getString(idxPhoneNumber)
+                            if(phoneNumber.isNullOrEmpty()){phoneNumber = dataCursor.getString(idxPhoneNumber2).replace(" ","")}
+
                             val phone = Phone(
-                                dataCursor.getString(idxPhoneNumber),
+                                phoneNumber,
                                 dataCursor.getInt(idxPhoneNumberType),
                                 dataCursor.getString(idxPhoneNumberCustomType)
                             )

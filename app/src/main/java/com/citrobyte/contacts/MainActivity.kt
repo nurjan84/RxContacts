@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(){
             RxContacts(contentResolver)
                 .sortByDisplayName()
                 //.getContacts(limit, offset, "search by phone number or display name")
-                .getAllContacts("126")  //set null to skip searching
+                .getAllContacts(null)  //set null to skip searching
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
