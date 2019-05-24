@@ -1,4 +1,4 @@
-# RxContacts
+# Android RxContacts
 Rx Contacts Library
 
 [![](https://jitpack.io/v/nurjan84/RxContacts.svg)](https://jitpack.io/#nurjan84/RxContacts)
@@ -23,7 +23,7 @@ allprojects {
 
 ```
 dependencies {
-	 implementation 'com.github.nurjan84:RxContacts:0.1.1'
+	 implementation 'com.github.nurjan84:RxContacts:0.1.2'
 }
 ```
 
@@ -34,7 +34,8 @@ private fun getRxContacts(){
         disposables.add(
             RxContacts(this)
                 .sortByDisplayName()
-                .getAllContacts()  // .getContacts(limit, offset)
+                //.getContacts(limit, offset, "search by phone number or display name")
+                .getAllContacts("search by phone number or display name")  //set null to skip searching
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
