@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity(){
 
     private fun getRxContacts(){
         disposables.add(
-            RxContacts(this)
+            RxContacts(contentResolver)
                 .sortByDisplayName()
                 //.getContacts(limit, offset, "search by phone number or display name")
                 .getAllContacts(null)  //set null to skip searching

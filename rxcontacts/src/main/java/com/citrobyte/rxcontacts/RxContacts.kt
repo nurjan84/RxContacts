@@ -7,14 +7,12 @@ import android.provider.ContactsContract
 
 import io.reactivex.Observable
 
-class RxContacts (private val context : Context){
+class RxContacts (private val contentResolver : ContentResolver){
 
     companion object{
         const val LIMIT = "LIMIT"
         const val OFFSET = "OFFSET"
     }
-
-    private var contentResolver : ContentResolver = context.contentResolver
 
     private var contactsSortingOrder:String? = null
 
