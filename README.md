@@ -35,7 +35,7 @@ private fun getRxContacts(){
             RxContacts(this)
                 .sortByDisplayName()
                 //.getContacts(limit, offset, "search by phone number or display name")
-                .getAllContacts(null)  //set null to skip searching
+                .getAllContacts("search by phone number or display name")  //set null to skip searching
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
