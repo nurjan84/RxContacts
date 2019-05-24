@@ -1,18 +1,12 @@
 package com.citrobyte.rxcontacts
 
 import android.content.ContentResolver
-import android.content.Context
 import android.database.Cursor
 import android.provider.ContactsContract
 
 import io.reactivex.Observable
 
 class RxContacts (private val contentResolver : ContentResolver){
-
-    companion object{
-        const val LIMIT = "LIMIT"
-        const val OFFSET = "OFFSET"
-    }
 
     private var contactsSortingOrder:String? = null
 
@@ -46,8 +40,6 @@ class RxContacts (private val contentResolver : ContentResolver){
         val idxThumbnailUri = contactCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI)
 
 
-        var searchingByPhoneNumber = false
-
         while (contactCursor.moveToNext()){
 
             val contact = Contact(contactCursor.getLong(idxId))
@@ -55,12 +47,17 @@ class RxContacts (private val contentResolver : ContentResolver){
             contact.photoUri = contactCursor.getString(idxPhotoUri)
             contact.thumbnailUri = contactCursor.getString(idxThumbnailUri)
 
-            var isContainsSearchValue = false
+            var dataCursor : Cursor? = null
             if(like != null && isNumber(like)){
-                searchingByPhoneNumber = true
+                val searchCursor = createSearchContactsDataCursor(contact.contactId, like)
+                if(searchCursor != null && searchCursor.count > 0){
+                    dataCursor = createContactsDataCursor(contact.contactId)
+                }
+                searchCursor?.close()
+            }else{
+                dataCursor = createContactsDataCursor(contact.contactId)
             }
 
-            val dataCursor = createContactsDataCursor(contact.contactId)
             if(dataCursor != null){
                 val idxMimeType = dataCursor.getColumnIndex(ContactsContract.Data.MIMETYPE)
                 val idxFirstName = dataCursor.getColumnIndex(ContactsContract.Data.DATA2)
@@ -112,14 +109,8 @@ class RxContacts (private val contentResolver : ContentResolver){
                         }
                         ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE ->{
                             if(contact.phones == null){contact.phones = ArrayList()}
-                            val phoneValue = dataCursor.getString(idxPhoneNumber)
-                            if(searchingByPhoneNumber){
-                                if(phoneValue?.contains(like!!, true) == true){
-                                    isContainsSearchValue = true
-                                }
-                            }
                             val phone = Phone(
-                                phoneValue,
+                                dataCursor.getString(idxPhoneNumber),
                                 dataCursor.getInt(idxPhoneNumberType),
                                 dataCursor.getString(idxPhoneNumberCustomType)
                             )
@@ -168,14 +159,9 @@ class RxContacts (private val contentResolver : ContentResolver){
                         }
                     }
                 }
-            }
-            if(searchingByPhoneNumber){
-                if(isContainsSearchValue){
-                    listOfContacts.add(contact)
-                }
-            }else{
                 listOfContacts.add(contact)
             }
+
         }
 
         contactCursor.close()
@@ -201,7 +187,7 @@ class RxContacts (private val contentResolver : ContentResolver){
 
         var limitAndOffset = ""
         if(limit != null && offset != null){
-            limitAndOffset =  " $LIMIT $limit $OFFSET $offset"
+            limitAndOffset =  " LIMIT $limit OFFSET $offset"
         }
 
         return contentResolver.query(
@@ -210,6 +196,25 @@ class RxContacts (private val contentResolver : ContentResolver){
             selection,
             selectionArg,
             contactsSortingOrder + limitAndOffset
+        )
+    }
+
+    private fun createSearchContactsDataCursor(contactId:Long, like:String?):Cursor?{
+        val projection = arrayOf(
+            ContactsContract.Data.CONTACT_ID,
+            ContactsContract.Data.DATA4,
+            ContactsContract.Data.MIMETYPE
+        )
+
+        val selection :String? = ContactsContract.Data.CONTACT_ID +" = ?" + " AND " + ContactsContract.Data.MIMETYPE +" = ?"+ " AND " + ContactsContract.Data.DATA4 + " LIKE ?"
+        val selectionArg : Array<String>? = arrayOf(contactId.toString(), ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE, "%$like%")
+
+        return contentResolver.query(
+            ContactsContract.Data.CONTENT_URI,
+            projection,
+            selection,
+            selectionArg,
+            null
         )
     }
 
