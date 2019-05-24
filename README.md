@@ -34,7 +34,8 @@ private fun getRxContacts(){
         disposables.add(
             RxContacts(this)
                 .sortByDisplayName()
-                .getAllContacts()  // .getContacts(limit, offset)
+                //.getContacts(limit, offset, "search by phone number or display name")
+                .getAllContacts(null)  //set null to skip searching
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
