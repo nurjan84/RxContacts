@@ -1,4 +1,4 @@
-# RxContacts
+# Android RxContacts
 Rx Contacts Library
 
 [![](https://jitpack.io/v/nurjan84/RxContacts.svg)](https://jitpack.io/#nurjan84/RxContacts)
