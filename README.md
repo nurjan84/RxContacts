@@ -23,7 +23,7 @@ allprojects {
 
 ```
 dependencies {
-	implementation 'com.github.nurjan84:RxContacts:0.2.2'
+	implementation 'com.github.nurjan84:RxContacts:0.2.5'
 }
 ```
 
@@ -74,4 +74,19 @@ var isStarred:Boolean?
 var photoUri:String?
 var thumbnailUri:String?
 var websites:ArrayList<String>?
+```
+
+Photo of the contact stored as blob, so you can get it as byte array or file:
+```
+//blob will be saved in cache directory
+private fun getPhotoFile(){
+        val newImagePath = "contact_photo.jpg"
+        val file = RxContactsUtils(contentResolver).getContactPhotoFile(CONTACT_ID,  File( cacheDir, newImagePath))
+        println("getPhotoFile = ${file?.absolutePath}")
+    }
+
+private fun getPhotoByteArray(){
+	val bytes = RxContactsUtils(contentResolver).getContactPhotoByteArray(CONTACT_ID)
+	println("getPhotoBytes = ${bytes?.size}")
+}
 ```
