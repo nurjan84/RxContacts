@@ -4,11 +4,13 @@ import android.Manifest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.citrobyte.rxcontacts.RxContacts
+import com.citrobyte.rxcontacts.RxContactsUtils
 import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 
 class MainActivity : AppCompatActivity(){
 
@@ -45,7 +47,7 @@ class MainActivity : AppCompatActivity(){
             RxContacts(contentResolver)
                 .sortByDisplayName()
                 //.getContacts(limit, offset, "search by phone number or display name")
-                .getAllContacts("278")  //set null to skip searching
+                .getAllContacts(null)  //set null to skip searching
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -57,6 +59,17 @@ class MainActivity : AppCompatActivity(){
                     }}
                 )
         )
+    }
+
+    private fun getPhotoFile(){
+        val newImagePath = "contact_photo.jpg"
+        val file = RxContactsUtils(contentResolver).getContactPhotoFile(23,  File( cacheDir, newImagePath))
+        println("getPhotoFile = ${file?.absolutePath}")
+    }
+
+    private fun getPhotoByteArray(){
+        val bytes = RxContactsUtils(contentResolver).getContactPhotoByteArray(23)
+        println("getPhotoBytes = ${bytes?.size}")
     }
 
 }

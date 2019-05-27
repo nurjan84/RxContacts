@@ -1,10 +1,13 @@
 package com.citrobyte.rxcontacts
 
 import android.content.ContentResolver
+import android.content.ContentUris
 import android.database.Cursor
 import android.provider.ContactsContract
-
 import io.reactivex.Observable
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class RxContacts (private val contentResolver : ContentResolver){
 
@@ -260,5 +263,6 @@ class RxContacts (private val contentResolver : ContentResolver){
     }
 
     private fun isNumber(c:CharSequence) = run { c.matches("-?\\d+(\\.\\d+)?".toRegex()) }
+
 
 }
