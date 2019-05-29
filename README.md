@@ -78,15 +78,17 @@ var websites:ArrayList<String>?
 
 Photo of the contact stored as blob, so you can get it as byte array or file:
 ```
+val preferHighresPhoto = true
+
 //blob will be saved in cache directory
 private fun getPhotoFile(){
         val newImagePath = "contact_photo.jpg"
-        val file = RxContactsUtils(contentResolver).getContactPhotoFile(CONTACT_ID,  File( cacheDir, newImagePath))
+        val file = RxContactsUtils(contentResolver).getContactPhotoFile(CONTACT_ID,  File( cacheDir, newImagePath), preferHighresPhoto)
         println("getPhotoFile = ${file?.absolutePath}")
     }
 
 private fun getPhotoByteArray(){
-	val bytes = RxContactsUtils(contentResolver).getContactPhotoByteArray(CONTACT_ID)
+	val bytes = RxContactsUtils(contentResolver).getContactPhotoByteArray(CONTACT_ID, preferHighresPhoto)
 	println("getPhotoBytes = ${bytes?.size}")
 }
 ```
