@@ -8,6 +8,7 @@ import io.reactivex.Observable
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.Exception
 
 class RxContacts (private val contentResolver : ContentResolver){
 
@@ -35,146 +36,161 @@ class RxContacts (private val contentResolver : ContentResolver){
 
     private fun readContacts(contactCursor:Cursor, like: String?): Observable<ArrayList<Contact>>{
 
-        val listOfContacts = ArrayList<Contact>()
+        try {
+            val listOfContacts = ArrayList<Contact>()
 
-        val idxId = contactCursor.getColumnIndex(ContactsContract.Contacts._ID)
-        val idxDisplayName = contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
-        val idxPhotoUri = contactCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI)
-        val idxThumbnailUri = contactCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI)
+            val idxId = contactCursor.getColumnIndex(ContactsContract.Contacts._ID)
+            val idxDisplayName = contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
+            val idxPhotoUri = contactCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI)
+            val idxThumbnailUri = contactCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI)
 
 
-        while (contactCursor.moveToNext()){
+            while (contactCursor.moveToNext()){
 
-            val contact = Contact(contactCursor.getLong(idxId))
-            contact.displayName = contactCursor.getString(idxDisplayName)
-            contact.photoUri = contactCursor.getString(idxPhotoUri)
-            contact.thumbnailUri = contactCursor.getString(idxThumbnailUri)
+                val contact = Contact(contactCursor.getLong(idxId))
+                contact.displayName = contactCursor.getString(idxDisplayName)
+                contact.photoUri = contactCursor.getString(idxPhotoUri)
+                contact.thumbnailUri = contactCursor.getString(idxThumbnailUri)
 
-            var dataCursor : Cursor? = null
-            if(like != null && isNumber(like)){
-                val searchCursor = createSearchContactsDataCursor(contact.contactId, like)
-                if(searchCursor != null && searchCursor.count > 0){
+                var dataCursor : Cursor? = null
+                if(like != null && isNumber(like)){
+                    val searchCursor = createSearchContactsDataCursor(contact.contactId, like)
+                    try {
+                        if(searchCursor != null && searchCursor.count > 0){
+                            dataCursor = createContactsDataCursor(contact.contactId)
+                        }
+                    }catch (e:Exception){
+                        e.printStackTrace()
+                    }finally {
+                        searchCursor?.close()
+                    }
+                }else{
                     dataCursor = createContactsDataCursor(contact.contactId)
                 }
-                searchCursor?.close()
-            }else{
-                dataCursor = createContactsDataCursor(contact.contactId)
-            }
 
-            if(dataCursor != null){
-                val idxMimeType = dataCursor.getColumnIndex(ContactsContract.Data.MIMETYPE)
-                val idxFirstName = dataCursor.getColumnIndex(ContactsContract.Data.DATA2)
-                val idxLastName = dataCursor.getColumnIndex(ContactsContract.Data.DATA3)
-                val idxMiddleName = dataCursor.getColumnIndex(ContactsContract.Data.DATA5)
-                val idxNamePrefix = dataCursor.getColumnIndex(ContactsContract.Data.DATA4)
-                val idxNameSuffix = dataCursor.getColumnIndex(ContactsContract.Data.DATA6)
-                val idxPhoneticFirstName = dataCursor.getColumnIndex(ContactsContract.Data.DATA7)
-                val idxPhoneticLastName = dataCursor.getColumnIndex(ContactsContract.Data.DATA9)
-                val idxPhoneticMiddleName = dataCursor.getColumnIndex(ContactsContract.Data.DATA8)
-                val idxNickName = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
-                val idxNote = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
-                val idxPhoneNumber = dataCursor.getColumnIndex(ContactsContract.Data.DATA4)
-                val idxPhoneNumber2 = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
-                val idxPhoneNumberType = dataCursor.getColumnIndex(ContactsContract.Data.DATA2)
-                val idxPhoneNumberCustomType = dataCursor.getColumnIndex(ContactsContract.Data.DATA3)
-                val idxEmail = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
-                val idxEmailType = dataCursor.getColumnIndex(ContactsContract.Data.DATA2)
-                val idxEmailCustomType = dataCursor.getColumnIndex(ContactsContract.Data.DATA3)
-                val idxEventDate = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
-                val idxEventType = dataCursor.getColumnIndex(ContactsContract.Data.DATA2)
-                val idxEventCustomType = dataCursor.getColumnIndex(ContactsContract.Data.DATA3)
-                val idxIm = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
-                val idxImProtocol = dataCursor.getColumnIndex(ContactsContract.Data.DATA2)
-                val idxImCustomProtocol = dataCursor.getColumnIndex(ContactsContract.Data.DATA3)
-                val idxCompany = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
-                val idxCompanyTitle = dataCursor.getColumnIndex(ContactsContract.Data.DATA4)
-                val idxSIP = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
-                val idxWebsite = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
-                val idxStarred = dataCursor.getColumnIndex(ContactsContract.Data.STARRED)
+                try {
+                    if(dataCursor != null){
+                        val idxMimeType = dataCursor.getColumnIndex(ContactsContract.Data.MIMETYPE)
+                        val idxFirstName = dataCursor.getColumnIndex(ContactsContract.Data.DATA2)
+                        val idxLastName = dataCursor.getColumnIndex(ContactsContract.Data.DATA3)
+                        val idxMiddleName = dataCursor.getColumnIndex(ContactsContract.Data.DATA5)
+                        val idxNamePrefix = dataCursor.getColumnIndex(ContactsContract.Data.DATA4)
+                        val idxNameSuffix = dataCursor.getColumnIndex(ContactsContract.Data.DATA6)
+                        val idxPhoneticFirstName = dataCursor.getColumnIndex(ContactsContract.Data.DATA7)
+                        val idxPhoneticLastName = dataCursor.getColumnIndex(ContactsContract.Data.DATA9)
+                        val idxPhoneticMiddleName = dataCursor.getColumnIndex(ContactsContract.Data.DATA8)
+                        val idxNickName = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
+                        val idxNote = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
+                        val idxPhoneNumber = dataCursor.getColumnIndex(ContactsContract.Data.DATA4)
+                        val idxPhoneNumber2 = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
+                        val idxPhoneNumberType = dataCursor.getColumnIndex(ContactsContract.Data.DATA2)
+                        val idxPhoneNumberCustomType = dataCursor.getColumnIndex(ContactsContract.Data.DATA3)
+                        val idxEmail = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
+                        val idxEmailType = dataCursor.getColumnIndex(ContactsContract.Data.DATA2)
+                        val idxEmailCustomType = dataCursor.getColumnIndex(ContactsContract.Data.DATA3)
+                        val idxEventDate = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
+                        val idxEventType = dataCursor.getColumnIndex(ContactsContract.Data.DATA2)
+                        val idxEventCustomType = dataCursor.getColumnIndex(ContactsContract.Data.DATA3)
+                        val idxIm = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
+                        val idxImProtocol = dataCursor.getColumnIndex(ContactsContract.Data.DATA2)
+                        val idxImCustomProtocol = dataCursor.getColumnIndex(ContactsContract.Data.DATA3)
+                        val idxCompany = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
+                        val idxCompanyTitle = dataCursor.getColumnIndex(ContactsContract.Data.DATA4)
+                        val idxSIP = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
+                        val idxWebsite = dataCursor.getColumnIndex(ContactsContract.Data.DATA1)
+                        val idxStarred = dataCursor.getColumnIndex(ContactsContract.Data.STARRED)
 
-                while(dataCursor.moveToNext()){
-                    contact.isStarred = dataCursor.getInt(idxStarred) != 0
-                    when(dataCursor.getString(idxMimeType)){
-                        ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE -> {
-                            contact.firstName = dataCursor.getString(idxFirstName)
-                            contact.lastName = dataCursor.getString(idxLastName)
-                            contact.middleName = dataCursor.getString(idxMiddleName)
-                            contact.namePrefix = dataCursor.getString(idxNamePrefix)
-                            contact.nameSuffix = dataCursor.getString(idxNameSuffix)
-                            contact.phoneticFirstName = dataCursor.getString(idxPhoneticFirstName)
-                            contact.phoneticLastName = dataCursor.getString(idxPhoneticLastName)
-                            contact.phoneticMiddleName = dataCursor.getString(idxPhoneticMiddleName)
-                        }
-                        ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE ->{
-                            contact.nickName = dataCursor.getString(idxNickName)
-                        }
-                        ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE ->{
-                            contact.note = dataCursor.getString(idxNote)
-                        }
-                        ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE ->{
-                            if(contact.phones == null){contact.phones = ArrayList()}
-                            var phoneNumber = dataCursor.getString(idxPhoneNumber)
-                            if(phoneNumber.isNullOrEmpty()){phoneNumber = dataCursor.getString(idxPhoneNumber2).replace(" ","")}
+                        while(dataCursor.moveToNext()){
+                            contact.isStarred = dataCursor.getInt(idxStarred) != 0
+                            when(dataCursor.getString(idxMimeType)){
+                                ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE -> {
+                                    contact.firstName = dataCursor.getString(idxFirstName)
+                                    contact.lastName = dataCursor.getString(idxLastName)
+                                    contact.middleName = dataCursor.getString(idxMiddleName)
+                                    contact.namePrefix = dataCursor.getString(idxNamePrefix)
+                                    contact.nameSuffix = dataCursor.getString(idxNameSuffix)
+                                    contact.phoneticFirstName = dataCursor.getString(idxPhoneticFirstName)
+                                    contact.phoneticLastName = dataCursor.getString(idxPhoneticLastName)
+                                    contact.phoneticMiddleName = dataCursor.getString(idxPhoneticMiddleName)
+                                }
+                                ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE ->{
+                                    contact.nickName = dataCursor.getString(idxNickName)
+                                }
+                                ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE ->{
+                                    contact.note = dataCursor.getString(idxNote)
+                                }
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE ->{
+                                    if(contact.phones == null){contact.phones = ArrayList()}
+                                    var phoneNumber = dataCursor.getString(idxPhoneNumber)
+                                    if(phoneNumber.isNullOrEmpty()){phoneNumber = dataCursor.getString(idxPhoneNumber2).replace(" ","")}
 
-                            val phone = Phone(
-                                phoneNumber,
-                                dataCursor.getInt(idxPhoneNumberType),
-                                dataCursor.getString(idxPhoneNumberCustomType)
-                            )
-                            contact.phones?.add(phone)
+                                    val phone = Phone(
+                                        phoneNumber,
+                                        dataCursor.getInt(idxPhoneNumberType),
+                                        dataCursor.getString(idxPhoneNumberCustomType)
+                                    )
+                                    contact.phones?.add(phone)
+                                }
+                                ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE ->{
+                                    if(contact.emails == null){contact.emails = ArrayList()}
+                                    val email = Email(
+                                        dataCursor.getString(idxEmail),
+                                        dataCursor.getInt(idxEmailType),
+                                        dataCursor.getString(idxEmailCustomType)
+                                    )
+                                    contact.emails?.add(email)
+                                }
+                                ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE ->{
+                                    if(contact.eventDates == null){contact.eventDates = ArrayList()}
+                                    val event = EventDate(
+                                        dataCursor.getString(idxEventDate),
+                                        dataCursor.getInt(idxEventType),
+                                        dataCursor.getString(idxEventCustomType)
+                                    )
+                                    contact.eventDates?.add(event)
+                                }
+                                ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE ->{
+                                    if(contact.messengers == null){contact.messengers = ArrayList()}
+                                    val im = IM(
+                                        dataCursor.getString(idxIm),
+                                        dataCursor.getInt(idxImProtocol),
+                                        dataCursor.getString(idxImCustomProtocol)
+                                    )
+                                    contact.messengers?.add(im)
+                                }
+                                ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE ->{
+                                    val company = Company(
+                                        dataCursor.getString(idxCompany),
+                                        dataCursor.getString(idxCompanyTitle)
+                                    )
+                                    contact.company = company
+                                }
+                                ContactsContract.CommonDataKinds.SipAddress.CONTENT_ITEM_TYPE ->{
+                                    contact.sip = dataCursor.getString(idxSIP)
+                                }
+                                ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE ->{
+                                    if(contact.websites == null){contact.websites = ArrayList()}
+                                    contact.websites?.add(dataCursor.getString(idxWebsite))
+                                }
+                            }
                         }
-                        ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE ->{
-                            if(contact.emails == null){contact.emails = ArrayList()}
-                            val email = Email(
-                                dataCursor.getString(idxEmail),
-                                dataCursor.getInt(idxEmailType),
-                                dataCursor.getString(idxEmailCustomType)
-                            )
-                            contact.emails?.add(email)
-                        }
-                        ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE ->{
-                            if(contact.eventDates == null){contact.eventDates = ArrayList()}
-                            val event = EventDate(
-                                dataCursor.getString(idxEventDate),
-                                dataCursor.getInt(idxEventType),
-                                dataCursor.getString(idxEventCustomType)
-                            )
-                            contact.eventDates?.add(event)
-                        }
-                        ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE ->{
-                            if(contact.messengers == null){contact.messengers = ArrayList()}
-                            val im = IM(
-                                dataCursor.getString(idxIm),
-                                dataCursor.getInt(idxImProtocol),
-                                dataCursor.getString(idxImCustomProtocol)
-                            )
-                            contact.messengers?.add(im)
-                        }
-                        ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE ->{
-                            val company = Company(
-                                dataCursor.getString(idxCompany),
-                                dataCursor.getString(idxCompanyTitle)
-                            )
-                            contact.company = company
-                        }
-                        ContactsContract.CommonDataKinds.SipAddress.CONTENT_ITEM_TYPE ->{
-                            contact.sip = dataCursor.getString(idxSIP)
-                        }
-                        ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE ->{
-                            if(contact.websites == null){contact.websites = ArrayList()}
-                            contact.websites?.add(dataCursor.getString(idxWebsite))
-                        }
+                        listOfContacts.add(contact)
                     }
+                }catch (e:Exception){
+                    e.printStackTrace()
+                }finally {
+                    dataCursor?.close()
                 }
-                listOfContacts.add(contact)
-                dataCursor.close()
-            }
 
+            }
+            return Observable.fromArray(listOfContacts)
+        }catch (e : Exception){
+            e.printStackTrace()
+        }finally {
+            contactCursor.close()
         }
 
-        contactCursor.close()
-
-        return Observable.fromArray(listOfContacts)
+        return Observable.empty()
     }
 
     private fun createContactsCursor(limit:Int?, offset:Int?, like:String?): Cursor? {

@@ -63,12 +63,12 @@ class MainActivity : AppCompatActivity(){
 
     private fun getPhotoFile(){
         val newImagePath = "contact_photo.jpg"
-        val file = RxContactsUtils(contentResolver).getContactPhotoFile(23,  File( cacheDir, newImagePath))
-        println("getPhotoFile = ${file?.absolutePath}")
+        val file = RxContactsUtils(contentResolver).getContactPhotoFile(23,  File( cacheDir, newImagePath), true)
+        println("getPhotoFile = ${file?.path}")
     }
 
     private fun getPhotoByteArray(){
-        val bytes = RxContactsUtils(contentResolver).getContactPhotoByteArray(23)
+        val bytes = RxContactsUtils(contentResolver).getContactPhotoByteArray(23, true)
         println("getPhotoBytes = ${bytes?.size}")
     }
 

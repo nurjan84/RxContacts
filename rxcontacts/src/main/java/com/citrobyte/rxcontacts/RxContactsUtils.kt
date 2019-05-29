@@ -9,10 +9,10 @@ import java.io.IOException
 
 class RxContactsUtils(private val contentResolver : ContentResolver){
 
-    fun getContactPhotoFile(contactId: Long, file: File): File? {
+    fun getContactPhotoFile(contactId: Long, file: File, preferHighRes:Boolean): File? {
         val contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
         return try {
-            val photoInputStream = ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri)?: return null
+            val photoInputStream = ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri, preferHighRes)?: return null
             val buffer = ByteArray(photoInputStream.available())
             photoInputStream.read(buffer)
             val outputStream = FileOutputStream(file)
@@ -27,10 +27,10 @@ class RxContactsUtils(private val contentResolver : ContentResolver){
     }
 
 
-    fun getContactPhotoByteArray(contactId: Long): ByteArray? {
+    fun getContactPhotoByteArray(contactId: Long, preferHighRes:Boolean): ByteArray? {
         val contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
         return try {
-            val photoInputStream = ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri)?: return null
+            val photoInputStream = ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri, preferHighRes)?: return null
              ByteArray(photoInputStream.available())
         } catch (e: IOException) {
             e.printStackTrace()
