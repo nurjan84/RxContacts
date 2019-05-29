@@ -167,6 +167,7 @@ class RxContacts (private val contentResolver : ContentResolver){
                     }
                 }
                 listOfContacts.add(contact)
+                dataCursor.close()
             }
 
         }
